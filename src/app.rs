@@ -1,3 +1,6 @@
+//! This module is responsible for rendering tui stuff and handling user input for now.
+//! However we will move the logic ui to its own module.
+
 use crate::sys_info;
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
