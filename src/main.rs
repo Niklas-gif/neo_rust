@@ -33,7 +33,7 @@ pub trait FetchSystemInfos {
 
 struct LinuxInfo {}
 //LINUX!
-fn get_os() -> String {
+/*fn get_os() -> String {
     let file_sys_output =
         fs::read_to_string("/etc/os-release").expect("couldn't read /ect/os-release !");
 
@@ -43,9 +43,9 @@ fn get_os() -> String {
         }
     }
     return "Unknown OS".to_string();
-}
+}*/
 
-fn get_cpu() -> String {
+/*fn get_cpu() -> String {
     let file_sys_output =
         fs::read_to_string("/proc/cpuinfo").expect("couldn't read /proc/cpuinfo !");
 
@@ -55,6 +55,35 @@ fn get_cpu() -> String {
         }
     }
     return "Unknown CPU".to_string();
+}*/
+fn parse_fs(path: &str, begin: &str, trim: Option<char>) -> String {
+    let file_sys_output = fs::read_to_string(path).expect(&format!("couldn't read {path}"));
+
+    match trim {
+        Some(c) => {
+            for line in file_sys_output.lines() {
+                if line.starts_with(begin) {
+                    return line[begin.len()..].trim_matches(c).to_string();
+                }
+            }
+        }
+        None => {
+            for line in file_sys_output.lines() {
+                if line.starts_with(begin) {
+                    return line[begin.len()..].to_string();
+                }
+            }
+        }
+    }
+    return "Unknown".to_string();
+}
+
+fn get_os() -> String {
+    return parse_fs("/etc/os-release", "PRETTY_NAME=", Some('"'));
+}
+
+fn get_cpu() -> String {
+    return parse_fs("/proc/cpuinfo", "model name", None);
 }
 
 fn get_user() -> String {
@@ -64,11 +93,6 @@ fn get_user() -> String {
         None => return "Unkown".to_string(),
     };
 }
-
-fn parse_fs(path: &str, begin: &str, trim: Option<char>, err: Option<&str>) -> String {
-    return "".to_string();
-}
-// better use  fs::read_to_string
 
 fn main() {
     let sys_info = SysInfo {
