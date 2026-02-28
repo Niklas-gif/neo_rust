@@ -48,6 +48,14 @@ fn get_cpu() -> String {
     return "Unknown CPU".to_string();
 }
 
+fn get_user() -> String {
+    let user = std::env::var("USER").ok();
+    match user {
+        Some(user) => return user,
+        None => return "Unkown".to_string(),
+    };
+}
+
 fn parse_fs(path: &str, begin: &str, trim: Option<char>, err: Option<&str>) -> String {
     return "".to_string();
 }
@@ -56,9 +64,10 @@ fn parse_fs(path: &str, begin: &str, trim: Option<char>, err: Option<&str>) -> S
 fn main() {
     let sys_info = SysInfo {
         os: get_os(),
-        user: "".to_string(),
+        user: get_user(),
         cpu: get_cpu(),
     };
     println!("OS -> {} ", sys_info.os);
     println!("CPU -> {}", sys_info.cpu);
+    println!("USER -> {}", sys_info.user);
 }
