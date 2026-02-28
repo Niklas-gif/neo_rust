@@ -86,10 +86,8 @@ impl App {
         };
         Ok(())
     }
-}
 
-impl Widget for &App {
-    fn render(self, area: Rect, buf: &mut Buffer) {
+    fn demo_widget(&self, area: Rect, buf: &mut Buffer) {
         let title = Line::from("Neo Rust".bold());
         let instructions = Line::from(vec![" Quit ".into(), "<Q> ".red().bold()]);
         let block = Block::bordered()
@@ -97,7 +95,6 @@ impl Widget for &App {
             .title_bottom(instructions.centered())
             .border_set(border::THICK);
 
-        //TODO
         let sys_text = Text::from(vec![
             Line::from(vec!["OS: ".into(), self.sys_info.os.as_str().red()]),
             Line::from(vec!["CPU: ".into(), self.sys_info.cpu.as_str().red()]),
@@ -108,6 +105,12 @@ impl Widget for &App {
             .right_aligned()
             .block(block)
             .render(area, buf);
+    }
+}
+
+impl Widget for &App {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        self.demo_widget(area, buf);
     }
 }
 
