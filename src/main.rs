@@ -96,7 +96,7 @@ fn get_user() -> String {
     };
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct App {
     sys_info: SysInfo,
     exit: bool,
@@ -148,11 +148,11 @@ impl Widget for &App {
         //TODO Remove clones
         let sys_text = Text::from(vec![Line::from(vec![
             "OS: ".into(),
-            self.sys_info.os.clone().red(),
+            self.sys_info.os.as_str().red(),
             "CPU: ".into(),
-            self.sys_info.cpu.clone().red(),
+            self.sys_info.cpu.as_str().red(),
             "User: ".into(),
-            self.sys_info.user.clone().red(),
+            self.sys_info.user.as_str().red(),
         ])]);
 
         Paragraph::new(sys_text)
