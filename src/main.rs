@@ -166,17 +166,14 @@ impl Widget for &App {
             .title_bottom(instructions.centered())
             .border_set(border::THICK);
 
-        let sys_text = Text::from(vec![Line::from(vec![
-            "OS: ".into(),
-            self.sys_info.os.as_str().red(),
-            "CPU: ".into(),
-            self.sys_info.cpu.as_str().red(),
-            "User: ".into(),
-            self.sys_info.user.as_str().red(),
-        ])]);
+        let sys_text = Text::from(vec![
+            Line::from(vec!["OS: ".into(), self.sys_info.os.as_str().red()]),
+            Line::from(vec!["CPU: ".into(), self.sys_info.cpu.as_str().red()]),
+            Line::from(vec!["User: ".into(), self.sys_info.user.as_str().red()]),
+        ]);
 
         Paragraph::new(sys_text)
-            .centered()
+            .right_aligned()
             .block(block)
             .render(area, buf);
     }
