@@ -53,12 +53,6 @@ struct SysInfo {
 
 impl SysInfo {}
 
-pub trait FetchSystemInfos {
-    fn get_os() -> String;
-    fn get_user() -> String;
-    fn get_cpu() -> String;
-}
-
 struct LinuxInfo {}
 //LINUX!
 /*fn get_os() -> String {
