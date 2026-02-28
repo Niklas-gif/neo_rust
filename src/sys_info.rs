@@ -35,22 +35,15 @@ impl LinuxInfo {
     fn parse_fs(path: &str, begin: &str, trim: Option<char>) -> String {
         let file_sys_output = fs::read_to_string(path).expect(&format!("couldn't read {path}"));
 
-        match trim {
-            Some(c) => {
-                for line in file_sys_output.lines() {
-                    if line.starts_with(begin) {
-                        return line[begin.len()..].trim_matches(c).to_string();
-                    }
-                }
-            }
-            None => {
-                for line in file_sys_output.lines() {
-                    if line.starts_with(begin) {
-                        return line[begin.len()..].to_string();
-                    }
+        for line in file_sys_output.lines() {
+            if line.starts_with(begin) {
+                match trim {
+                    Some(c) => return line[begin.len()..].trim_matches(c).to_string(),
+                    None => return line[begin.len()..].to_string(),
                 }
             }
         }
+
         return "Unknown".to_string();
     }
 }
@@ -68,7 +61,7 @@ impl GetSysInfo for LinuxInfo {
         let user = std::env::var("USER").ok();
         match user {
             Some(user) => return user,
-            None => return "Unkown".to_string(),
+            None => return "Unknown".to_string(),
         };
     }
 }
