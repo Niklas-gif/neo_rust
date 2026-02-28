@@ -1,29 +1,22 @@
 use std::fs;
 
-use crate::{get_cpu, get_os, get_user};
-
-// TODO create seperate struct which gets used bye windows mac linux
-pub trait SystemInfo {
-    fn get_os(&self) -> String;
-    fn get_user(&self) -> String;
-    fn get_cpu(&self) -> String;
-}
-
-#[derive(Debug)]
-pub struct LinuxInfo {
+#[derive(Debug, Default)]
+pub struct SysInfo {
     pub os: String,
     pub user: String,
     pub cpu: String,
 }
 
-impl Default for LinuxInfo {
-    fn default() -> Self {
-        Self {
-            os: get_os(),
-            user: get_user(),
-            cpu: get_cpu(),
-        }
-    }
+pub trait GetSysInfo {
+    fn get_os() -> String;
+    fn get_user() -> String;
+    fn get_cpu() -> String;
+}
+
+/// Implementation for Linux system
+#[derive(Debug)]
+pub struct LinuxInfo {
+    pub sys_info: SysInfo,
 }
 
 impl LinuxInfo {
@@ -50,20 +43,32 @@ impl LinuxInfo {
     }
 }
 
-impl SystemInfo for LinuxInfo {
-    fn get_os(&self) -> String {
+impl GetSysInfo for LinuxInfo {
+    fn get_os() -> String {
         return LinuxInfo::parse_fs("/etc/os-release", "PRETTY_NAME=", Some('"'));
     }
 
-    fn get_cpu(&self) -> String {
+    fn get_cpu() -> String {
         return LinuxInfo::parse_fs("/proc/cpuinfo", "model name", None);
     }
 
-    fn get_user(&self) -> String {
+    fn get_user() -> String {
         let user = std::env::var("USER").ok();
         match user {
             Some(user) => return user,
             None => return "Unkown".to_string(),
         };
+    }
+}
+
+impl Default for LinuxInfo {
+    fn default() -> Self {
+        Self {
+            sys_info: SysInfo {
+                os: LinuxInfo::get_os(),
+                user: LinuxInfo::get_user(),
+                cpu: LinuxInfo::get_cpu(),
+            },
+        }
     }
 }

@@ -9,11 +9,12 @@ use ratatui::{
     widgets::{Block, Paragraph, Widget},
 };
 
-use std::{fs, io};
+use std::io;
 
-use crate::sys_info::SystemInfo;
+use crate::sys_info::SysInfo;
+
 mod sys_info;
-const PLACE_HOLDER: &str = "
+const _PLACE_HOLDER: &str = "
 ┌──────────────────────────────────────────────────┐
 │                                                  │
 │           xx                                     │
@@ -46,82 +47,13 @@ const PLACE_HOLDER: &str = "
 //Get user name --> $USER
 //Get Kernal TODO
 
-#[derive(Debug, Default)]
-struct SysInfo {
-    os: String,
-    user: String,
-    cpu: String,
-}
-
-//LINUX!
-/*fn get_os() -> String {
-    let file_sys_output =
-        fs::read_to_string("/etc/os-release").expect("couldn't read /ect/os-release !");
-
-    for line in file_sys_output.lines() {
-        if line.starts_with("PRETTY_NAME=") {
-            return line["PRETTY_NAME=".len()..].trim_matches('"').to_string();
-        }
-    }
-    return "Unknown OS".to_string();
-}*/
-
-/*fn get_cpu() -> String {
-    let file_sys_output =
-        fs::read_to_string("/proc/cpuinfo").expect("couldn't read /proc/cpuinfo !");
-
-    for line in file_sys_output.lines() {
-        if line.starts_with("model name	:") {
-            return line["model name	:".len()..].to_string();
-        }
-    }
-    return "Unknown CPU".to_string();
-}*/
-fn parse_fs(path: &str, begin: &str, trim: Option<char>) -> String {
-    let file_sys_output = fs::read_to_string(path).expect(&format!("couldn't read {path}"));
-
-    match trim {
-        Some(c) => {
-            for line in file_sys_output.lines() {
-                if line.starts_with(begin) {
-                    return line[begin.len()..].trim_matches(c).to_string();
-                }
-            }
-        }
-        None => {
-            for line in file_sys_output.lines() {
-                if line.starts_with(begin) {
-                    return line[begin.len()..].to_string();
-                }
-            }
-        }
-    }
-    return "Unknown".to_string();
-}
-
-fn get_os() -> String {
-    return parse_fs("/etc/os-release", "PRETTY_NAME=", Some('"'));
-}
-
-fn get_cpu() -> String {
-    return parse_fs("/proc/cpuinfo", "model name", None);
-}
-
-fn get_user() -> String {
-    let user = std::env::var("USER").ok();
-    match user {
-        Some(user) => return user,
-        None => return "Unkown".to_string(),
-    };
-}
-
 #[derive(Debug)]
-pub struct App<T: SystemInfo> {
-    sys_info: T,
+pub struct App {
+    sys_info: SysInfo,
     exit: bool,
 }
 
-impl<T: SystemInfo> App<T> {
+impl App {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
@@ -156,7 +88,7 @@ impl<T: SystemInfo> App<T> {
     }
 }
 
-impl<T: SystemInfo> Widget for &App<T> {
+impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let title = Line::from("Neo Rust".bold());
         let instructions = Line::from(vec![" Quit ".into(), "<Q> ".red().bold()]);
@@ -167,9 +99,9 @@ impl<T: SystemInfo> Widget for &App<T> {
 
         //TODO
         let sys_text = Text::from(vec![
-            Line::from(vec!["OS: ".into(), self.sys_info.get_os().red()]),
-            Line::from(vec!["CPU: ".into(), self.sys_info.get_cpu().red()]),
-            Line::from(vec!["User: ".into(), self.sys_info.get_user().red()]),
+            Line::from(vec!["OS: ".into(), self.sys_info.os.as_str().red()]),
+            Line::from(vec!["CPU: ".into(), self.sys_info.cpu.as_str().red()]),
+            Line::from(vec!["User: ".into(), self.sys_info.user.as_str().red()]),
         ]);
 
         Paragraph::new(sys_text)
@@ -180,14 +112,10 @@ impl<T: SystemInfo> Widget for &App<T> {
 }
 
 fn main() -> Result<(), io::Error> {
-    let linux = sys_info::LinuxInfo {
-        os: get_os(),
-        user: get_user(),
-        cpu: get_cpu(),
-    };
+    let linux = sys_info::LinuxInfo::default();
 
     let mut app = App {
-        sys_info: linux,
+        sys_info: linux.sys_info,
         exit: false,
     };
     ratatui::run(|terminal| app.run(terminal))
