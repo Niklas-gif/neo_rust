@@ -17,6 +17,8 @@ use std::{fs, io};
 //Get RAM --> free -m
 //Get user name --> $USER
 //Get Kernal TODO
+
+#[derive(Debug, Default)]
 struct SysInfo {
     os: String,
     user: String,
@@ -28,7 +30,7 @@ impl SysInfo {}
 pub trait FetchSystemInfos {
     fn get_os() -> String;
     fn get_user() -> String;
-    fn get_cput() -> String;
+    fn get_cpu() -> String;
 }
 
 struct LinuxInfo {}
@@ -94,13 +96,82 @@ fn get_user() -> String {
     };
 }
 
-fn main() {
+#[derive(Debug, Default)]
+pub struct App {
+    sys_info: SysInfo,
+    exit: bool,
+}
+
+impl App {
+    pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
+        while !self.exit {
+            terminal.draw(|frame| self.draw(frame))?;
+            self.handle_events()?;
+        }
+        Ok(())
+    }
+
+    fn draw(&self, frame: &mut Frame) {
+        frame.render_widget(self, frame.area());
+    }
+
+    fn exit(&mut self) {
+        self.exit = true;
+    }
+
+    fn handle_key_event(&mut self, key_event: KeyEvent) {
+        match key_event.code {
+            KeyCode::Char('q') => self.exit(),
+            _ => {}
+        }
+    }
+
+    fn handle_events(&mut self) -> io::Result<()> {
+        match event::read()? {
+            Event::Key(key_event) if key_event.kind == KeyEventKind::Press => {
+                self.handle_key_event(key_event)
+            }
+            _ => {}
+        };
+        Ok(())
+    }
+}
+
+impl Widget for &App {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        let title = Line::from("Neo Rust".bold());
+        let instructions = Line::from(vec![" Quit ".into(), "<Q> ".red().bold()]);
+        let block = Block::bordered()
+            .title(title.centered())
+            .title_bottom(instructions.centered())
+            .border_set(border::THICK);
+        //TODO Remove clones
+        let sys_text = Text::from(vec![Line::from(vec![
+            "OS: ".into(),
+            self.sys_info.os.clone().red(),
+            "CPU: ".into(),
+            self.sys_info.cpu.clone().red(),
+            "User: ".into(),
+            self.sys_info.user.clone().red(),
+        ])]);
+
+        Paragraph::new(sys_text)
+            .centered()
+            .block(block)
+            .render(area, buf);
+    }
+}
+
+fn main() -> Result<(), io::Error> {
     let sys_info = SysInfo {
         os: get_os(),
         user: get_user(),
         cpu: get_cpu(),
     };
-    println!("OS -> {} ", sys_info.os);
-    println!("CPU -> {}", sys_info.cpu);
-    println!("USER -> {}", sys_info.user);
+
+    let mut app = App {
+        sys_info: sys_info,
+        exit: false,
+    };
+    ratatui::run(|terminal| app.run(terminal))
 }
