@@ -11,6 +11,8 @@ use ratatui::{
 
 use std::{fs, io};
 
+use crate::sys_info::SystemInfo;
+mod sys_info;
 const PLACE_HOLDER: &str = "
 ┌──────────────────────────────────────────────────┐
 │                                                  │
@@ -51,9 +53,6 @@ struct SysInfo {
     cpu: String,
 }
 
-impl SysInfo {}
-
-struct LinuxInfo {}
 //LINUX!
 /*fn get_os() -> String {
     let file_sys_output =
@@ -117,12 +116,12 @@ fn get_user() -> String {
 }
 
 #[derive(Debug)]
-pub struct App {
-    sys_info: SysInfo,
+pub struct App<T: SystemInfo> {
+    sys_info: T,
     exit: bool,
 }
 
-impl App {
+impl<T: SystemInfo> App<T> {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
@@ -157,7 +156,7 @@ impl App {
     }
 }
 
-impl Widget for &App {
+impl<T: SystemInfo> Widget for &App<T> {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let title = Line::from("Neo Rust".bold());
         let instructions = Line::from(vec![" Quit ".into(), "<Q> ".red().bold()]);
@@ -166,10 +165,11 @@ impl Widget for &App {
             .title_bottom(instructions.centered())
             .border_set(border::THICK);
 
+        //TODO
         let sys_text = Text::from(vec![
-            Line::from(vec!["OS: ".into(), self.sys_info.os.as_str().red()]),
-            Line::from(vec!["CPU: ".into(), self.sys_info.cpu.as_str().red()]),
-            Line::from(vec!["User: ".into(), self.sys_info.user.as_str().red()]),
+            Line::from(vec!["OS: ".into(), self.sys_info.get_os().red()]),
+            Line::from(vec!["CPU: ".into(), self.sys_info.get_cpu().red()]),
+            Line::from(vec!["User: ".into(), self.sys_info.get_user().red()]),
         ]);
 
         Paragraph::new(sys_text)
@@ -180,14 +180,14 @@ impl Widget for &App {
 }
 
 fn main() -> Result<(), io::Error> {
-    let sys_info = SysInfo {
+    let linux = sys_info::LinuxInfo {
         os: get_os(),
         user: get_user(),
         cpu: get_cpu(),
     };
 
     let mut app = App {
-        sys_info: sys_info,
+        sys_info: linux,
         exit: false,
     };
     ratatui::run(|terminal| app.run(terminal))
