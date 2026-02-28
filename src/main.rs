@@ -9,7 +9,7 @@ use ratatui::{
     widgets::{Block, Paragraph, Widget},
 };
 
-use std::{io, process::Command};
+use std::{fs, io, process::Command};
 
 //Get OS --> /etc/os-release --> pretty name
 //Get CPU --> /proc/cpuinfo --> model name
@@ -22,21 +22,43 @@ struct SysInfo {
     cpu: String,
 }
 
+impl SysInfo {}
+
 fn get_os() -> String {
-    let output = Command::new("cat")
-        .arg("/etc/os-release")
-        .output()
-        .expect("Failed to fetch os");
-    return String::from_utf8_lossy(&output.stdout).to_string();
+    let file_sys_output =
+        fs::read_to_string("/etc/os-release").expect("couldn't read /ect/os-release !");
+
+    for line in file_sys_output.lines() {
+        if line.starts_with("PRETTY_NAME=") {
+            return line["PRETTY_NAME=".len()..].trim_matches('"').to_string();
+        }
+    }
+    return "Unknown OS".to_string();
 }
 
+fn get_cpu() -> String {
+    let file_sys_output =
+        fs::read_to_string("/proc/cpuinfo").expect("couldn't read /proc/cpuinfo !");
+
+    for line in file_sys_output.lines() {
+        if line.starts_with("model name	:") {
+            return line["model name	:".len()..].to_string();
+        }
+    }
+    return "Unknown CPU".to_string();
+}
+
+fn parse_fs(path: &str, begin: &str, trim: Option<char>, err: Option<&str>) -> String {
+    return "".to_string();
+}
 // better use  fs::read_to_string
 
 fn main() {
     let sys_info = SysInfo {
         os: get_os(),
         user: "".to_string(),
-        cpu: "".to_string(),
+        cpu: get_cpu(),
     };
-    println!("Test -> {} ", sys_info.os);
+    println!("OS -> {} ", sys_info.os);
+    println!("CPU -> {}", sys_info.cpu);
 }
