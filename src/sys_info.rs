@@ -15,6 +15,7 @@ pub struct SysInfo {
     pub os: String,
     pub user: String,
     pub cpu: String,
+    pub ascii_logo: Option<String>,
 }
 
 ///When Adding a new OS implement this trait.
@@ -73,6 +74,7 @@ impl Default for LinuxInfo {
                 os: LinuxInfo::get_os(),
                 user: LinuxInfo::get_user(),
                 cpu: LinuxInfo::get_cpu(),
+                ascii_logo: Some(String::from("Empty")),
             },
         }
     }
