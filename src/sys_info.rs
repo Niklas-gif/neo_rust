@@ -25,6 +25,24 @@ pub trait GetSysInfo {
     fn get_cpu() -> String;
 }
 
+const LINUX_ART: &str = r#"
+             _nnnn_
+            dGGGGMMb
+           @p~qp~~qMb
+           M|@||@) M|
+           @,----.JM|
+          JS^\__/  qKL
+         dZP        qKRb
+        dZP          qKKb
+        fZP            SMMb
+        HZM            MMMM
+        FqM            MMMM
+        __| ".        |\dS"qML
+        |    `.       | `' \Zq
+        _)      \.___.,|     .'
+        \____   )MMMMMP|   .'
+        `-'       `--' hjm "#;
+
 #[derive(Debug)]
 /// Implementation for Linux.
 pub struct LinuxInfo {
@@ -74,7 +92,7 @@ impl Default for LinuxInfo {
                 os: LinuxInfo::get_os(),
                 user: LinuxInfo::get_user(),
                 cpu: LinuxInfo::get_cpu(),
-                ascii_logo: Some(String::from("Empty")),
+                ascii_logo: Some(String::from(LINUX_ART)),
             },
         }
     }

@@ -17,6 +17,19 @@ pub fn ui(frame: &mut Frame, app: &App) {
         .constraints([Constraint::Min(20), Constraint::Min(20)])
         .split(frame.area());
     frame.render_widget(demo_widget(app), chunks[1]);
+    frame.render_widget(demo_ascii_art(app), chunks[0]);
+}
+
+fn demo_ascii_art(app: &App) -> Paragraph<'_> {
+    let block = Block::bordered().border_set(border::THICK);
+    match &app.sys_info.ascii_logo {
+        Some(a) => Paragraph::new(Text::from(a.to_string()))
+            .left_aligned()
+            .block(block),
+        None => Paragraph::new(Text::from("No ART"))
+            .left_aligned()
+            .block(block),
+    }
 }
 
 fn demo_widget(app: &App) -> Paragraph<'_> {
