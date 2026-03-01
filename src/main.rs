@@ -1,5 +1,6 @@
 mod app;
 mod sys_info;
+mod ui;
 
 use std::io;
 
