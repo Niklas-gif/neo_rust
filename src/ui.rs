@@ -13,7 +13,7 @@ use crate::app::App;
 pub fn ui(frame: &mut Frame, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([Constraint::Length(3), Constraint::Length(3)])
+        .constraints([Constraint::Min(20), Constraint::Min(20)])
         .split(frame.area());
     frame.render_widget(demo_widget(app), chunks[1]);
 }
