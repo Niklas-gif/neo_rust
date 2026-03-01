@@ -25,8 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     enable_raw_mode()?;
-    let mut stderr = io::stderr(); // This is a special case. Normally using stdout is fine
-    execute!(stderr, EnterAlternateScreen, EnableMouseCapture)?;
+    let mut stderr = io::stderr();
     let backend = CrosstermBackend::new(stderr);
     let mut terminal = Terminal::new(backend)?;
 
@@ -42,7 +41,7 @@ fn run<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<bool
                 // Skip events that are not KeyEventKind::Press
                 continue;
             }
-            //self.handle_events()?;
+
             match key.code {
                 KeyCode::Char('q') => app.exit(),
                 _ => {}
