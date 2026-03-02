@@ -1,13 +1,6 @@
 //! This module is responsible to retrieve information about the system.
 
-use std::fs;
-
-//Get OS --> /etc/os-release --> pretty name
-//Get CPU --> /proc/cpuinfo --> model name
-//Get GPU --> lspci --> 09:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 22 [Radeon RX 6700/6700 XT / 6800M] (rev c1)
-//Get RAM --> free -m
-//Get user name --> $USER
-//Get Kernal TODO
+use std::{fs, process::Command};
 
 #[derive(Debug, Default)]
 ///we store the metadata about the system here.
@@ -15,6 +8,7 @@ pub struct SysInfo {
     pub os: String,
     pub user: String,
     pub cpu: String,
+    pub gpu: String,
     pub ascii_logo: Option<String>,
 }
 
@@ -23,7 +17,15 @@ pub trait GetSysInfo {
     fn get_os() -> String;
     fn get_user() -> String;
     fn get_cpu() -> String;
+    fn get_gpu() -> String;
 }
+
+//Get OS --> /etc/os-release --> pretty name
+//Get CPU --> /proc/cpuinfo --> model name
+//Get GPU --> lspci --> 09:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 22 [Radeon RX 6700/6700 XT / 6800M] (rev c1)
+//Get RAM --> free -m
+//Get user name --> $USER
+//Get Kernal TODO
 
 const LINUX_ART: &str = r#"
              _nnnn_
@@ -83,6 +85,20 @@ impl GetSysInfo for LinuxInfo {
             None => return "Unknown".to_string(),
         };
     }
+
+    fn get_gpu() -> String {
+        let lspci_out = Command::new("lspci").output().expect("lspci failed");
+
+        for line in String::from_utf8_lossy(&lspci_out.stdout)
+            .to_string()
+            .lines()
+        {
+            if line.starts_with("09:00.0 VGA compatible controller:") {
+                return line["09:00.0 VGA compatible controller:".len()..].to_string();
+            }
+        }
+        return "Missing".to_string();
+    }
 }
 
 impl Default for LinuxInfo {
@@ -92,6 +108,7 @@ impl Default for LinuxInfo {
                 os: LinuxInfo::get_os(),
                 user: LinuxInfo::get_user(),
                 cpu: LinuxInfo::get_cpu(),
+                gpu: LinuxInfo::get_gpu(),
                 ascii_logo: Some(String::from(LINUX_ART)),
             },
         }

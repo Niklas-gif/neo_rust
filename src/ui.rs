@@ -43,6 +43,7 @@ fn demo_widget(app: &App) -> Paragraph<'_> {
     let sys_text = Text::from(vec![
         Line::from(vec!["OS: ".into(), app.sys_info.os.as_str().red()]),
         Line::from(vec!["CPU: ".into(), app.sys_info.cpu.as_str().red()]),
+        Line::from(vec!["GPU: ".into(), app.sys_info.gpu.as_str().red()]),
         Line::from(vec!["User: ".into(), app.sys_info.user.as_str().red()]),
     ]);
 
