@@ -1,5 +1,5 @@
 //! This module is responsible to retrieve information about the system.
-
+use regex::Regex;
 use std::{fs, process::Command};
 
 #[derive(Debug, Default)]
@@ -88,11 +88,12 @@ impl GetSysInfo for LinuxInfo {
 
     fn get_gpu() -> String {
         let lspci_out = Command::new("lspci").output().expect("lspci failed");
-
+        let regex = Regex::new(r"VGA.*[^\]]*.*[^\]]*");
         for line in String::from_utf8_lossy(&lspci_out.stdout)
             .to_string()
             .lines()
         {
+            //TODO Regex lspci | grep -P -i 'VGA.*[^\]]*.*[^\]]*' what about integrated graphics?
             if line.starts_with("09:00.0 VGA compatible controller:") {
                 return line["09:00.0 VGA compatible controller:".len()..].to_string();
             }
