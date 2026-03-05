@@ -32,10 +32,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     let result = run(&mut terminal, &mut app);
-
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
     terminal.show_cursor()?;
+    /*match result {
+        Ok(r) => return Ok(()),
+        Err(e) => return Box::new(Err(())),
+    }*/
     Ok(())
 }
 
