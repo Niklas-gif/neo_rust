@@ -2,6 +2,11 @@
 use regex::Regex;
 use std::{fs, process::Command};
 
+pub fn get_os() {
+    // Get kernel -> uname -s
+    todo!()
+}
+
 #[derive(Debug, Default)]
 ///we store the metadata about the system here.
 pub struct SysInfo {
@@ -14,7 +19,7 @@ pub struct SysInfo {
 
 ///When Adding a new OS implement this trait.
 pub trait GetSysInfo {
-    fn get_os() -> String;
+    fn get_os_info() -> String;
     fn get_user() -> String;
     fn get_cpu() -> String;
     fn get_gpu() -> String;
@@ -70,7 +75,8 @@ impl LinuxInfo {
 }
 
 impl GetSysInfo for LinuxInfo {
-    fn get_os() -> String {
+    fn get_os_info() -> String {
+        // Get Distro
         return LinuxInfo::parse_fs("/etc/os-release", "PRETTY_NAME=", Some('"'));
     }
 
@@ -100,7 +106,7 @@ impl Default for LinuxInfo {
     fn default() -> Self {
         Self {
             sys_info: SysInfo {
-                os: LinuxInfo::get_os(),
+                os: LinuxInfo::get_os_info(),
                 user: LinuxInfo::get_user(),
                 cpu: LinuxInfo::get_cpu(),
                 gpu: LinuxInfo::get_gpu(),
