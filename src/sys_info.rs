@@ -88,17 +88,11 @@ impl GetSysInfo for LinuxInfo {
 
     fn get_gpu() -> String {
         let lspci_out = Command::new("lspci").output().expect("lspci failed");
-        let regex = Regex::new(r"VGA.*[^\]]*.*[^\]]*");
-        for line in String::from_utf8_lossy(&lspci_out.stdout)
-            .to_string()
-            .lines()
-        {
-            //TODO Regex lspci | grep -P -i 'VGA.*[^\]]*.*[^\]]*' what about integrated graphics?
-            if line.starts_with("09:00.0 VGA compatible controller:") {
-                return line["09:00.0 VGA compatible controller:".len()..].to_string();
-            }
-        }
-        return "Missing".to_string();
+        let regex = Regex::new(r"VGA.*[^\]]*.*[^\]]*").unwrap();
+        let stdout = String::from_utf8_lossy(&lspci_out.stdout).to_string();
+        //TODO formating
+        let gpu_string = regex.find(&stdout);
+        return gpu_string.map(|m| m.as_str()).unwrap_or("None").to_string();
     }
 }
 
