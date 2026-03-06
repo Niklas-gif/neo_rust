@@ -23,14 +23,8 @@ pub trait GetSysInfo {
     fn get_user() -> String;
     fn get_cpu() -> String;
     fn get_gpu() -> String;
+    //fn get_memory() -> String;
 }
-
-//Get OS --> /etc/os-release --> pretty name
-//Get CPU --> /proc/cpuinfo --> model name
-//Get GPU --> lspci --> 09:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 22 [Radeon RX 6700/6700 XT / 6800M] (rev c1)
-//Get RAM --> free -m
-//Get user name --> $USER
-//Get Kernal TODO
 
 const LINUX_ART: &str = r#"
              _nnnn_
@@ -74,6 +68,27 @@ impl LinuxInfo {
     }
 }
 
+enum GPUVendor {
+    AMD,
+    NVIDIA,
+    INTEL,
+    MCST,
+    VIRTUALBOX,
+}
+
+impl GPUVendor {
+    fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "Advanced" => Some(GPUVendor::AMD),
+            "NVIDIA" => Some(GPUVendor::NVIDIA),
+            "Intel" => Some(GPUVendor::INTEL),
+            "MCST" => Some(GPUVendor::MCST),
+            "VirtualBox" => Some(GPUVendor::VIRTUALBOX),
+            _ => None,
+        }
+    }
+}
+
 impl GetSysInfo for LinuxInfo {
     fn get_os_info() -> String {
         // Get Distro
@@ -97,6 +112,7 @@ impl GetSysInfo for LinuxInfo {
         let regex = Regex::new(r"VGA.*[^\]]*.*[^\]]*").unwrap();
         let stdout = String::from_utf8_lossy(&lspci_out.stdout).to_string();
         //TODO formating
+        // TODO set vendor
         let gpu_string = regex.find(&stdout);
         return gpu_string.map(|m| m.as_str()).unwrap_or("None").to_string();
     }
