@@ -4,11 +4,11 @@ use std::{fs, process::Command};
 
 pub fn get_os() {
     // Get kernel -> uname -s
-    todo!()
+    println!("OS->{}",os_info::get());
 }
 
 #[derive(Debug, Default)]
-///we store the metadata about the system here.
+///stores the metadata about the system here.
 pub struct SysInfo {
     pub os: String,
     pub user: String,
@@ -109,11 +109,10 @@ impl GetSysInfo for LinuxInfo {
 
     fn get_gpu() -> String {
         let lspci_out = Command::new("lspci").output().expect("lspci failed");
-        let regex = Regex::new(r"VGA.*[^\]]*.*[^\]]*").unwrap();
         let stdout = String::from_utf8_lossy(&lspci_out.stdout).to_string();
         //TODO formating
         // TODO set vendor
-        let gpu_string = regex.find(&stdout);
+        let gpu_string = Regex::new(r"VGA.*[^\]]*.*[^\]]*").unwrap().find(&stdout);
         return gpu_string.map(|m| m.as_str()).unwrap_or("None").to_string();
     }
 }

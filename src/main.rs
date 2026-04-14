@@ -35,16 +35,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
     terminal.show_cursor()?;
-    /*match result {
-        Ok(r) => return Ok(()),
-        Err(e) => return Box::new(Err(())),
-    }*/
-    Ok(())
+    
+    result
 }
 
-fn run<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<bool> {
+fn run<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<(), Box<dyn Error>> {
     while !app.exit {
-        terminal.draw(|frame| ui(frame, app));
+        let result = terminal.draw(|frame| ui(frame, app));
         if let Event::Key(key) = event::read()? {
             if key.kind == event::KeyEventKind::Release {
                 // Skip events that are not KeyEventKind::Press
@@ -57,5 +54,5 @@ fn run<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<bool
             }
         }
     }
-    return Ok(true);
+    return Ok(());
 }
