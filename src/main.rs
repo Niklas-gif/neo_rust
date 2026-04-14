@@ -1,7 +1,9 @@
 mod app;
+mod linux;
 mod sys_info;
 mod ui;
-use crate::app::App;
+use crate::linux::LinuxInfo;
+use crate::{app::App,};
 use crate::ui::ui;
 
 use std::{error::Error, io};
@@ -17,7 +19,7 @@ use ratatui::{
 };
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let linux = sys_info::LinuxInfo::default();
+    let linux = LinuxInfo::default();
 
     let mut app = app::App {
         sys_info: linux.sys_info,
