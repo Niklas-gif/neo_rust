@@ -1,8 +1,10 @@
 //! This module is responsible to retrieve information about the system.
+use::std::env;
+
 
 pub fn get_os() {
     // Get kernel -> uname -s <- Only works on unix based systems!
-    println!("OS->{}",os_info::get());
+    println!("OS->{}",env::consts::OS);
 }
 
 #[derive(Debug, Default)]
