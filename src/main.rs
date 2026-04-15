@@ -5,6 +5,7 @@ mod sys_info;
 mod ui;
 use crate::linux::LinuxInfo;
 use crate::mac::MacInfo;
+use crate::sys_info::SysInfo;
 use crate::{app::App,};
 use crate::ui::ui;
 use std::{error::Error, io};
@@ -21,17 +22,18 @@ use ratatui::{
 fn main() -> Result<(), Box<dyn Error>> {
     
     let os = sys_info::get_os();
-    match os.as_str() {
-        "macos" => (),
-        "linux" => (),
-        _ => ()
-    }
-
-    let linux = LinuxInfo::default();
-    let _ = MacInfo::default();
+    let sys_info : SysInfo;
     
+    match os.as_str() {
+        "macos" => sys_info = MacInfo::default().sys_info,
+        "linux" => sys_info = LinuxInfo::default().sys_info,
+        _ => todo!()
+    }
+    /*let linux = LinuxInfo::default();
+    let _ = MacInfo::default();*/
+
     let mut app = app::App {
-        sys_info: linux.sys_info,
+        sys_info: sys_info,
         exit: false,
     };
 
