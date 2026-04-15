@@ -2,9 +2,9 @@
 use::std::env;
 
 
-pub fn get_os() {
+pub fn get_os() -> String{
     // Get kernel -> uname -s <- Only works on unix based systems!
-    println!("OS->{}",env::consts::OS);
+    env::consts::OS.to_string()
 }
 
 #[derive(Debug, Default)]
