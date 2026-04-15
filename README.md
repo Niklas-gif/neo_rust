@@ -18,6 +18,6 @@
 
 ## About
 
-This is just a fun project of mine to learn some Rust 🦀.
+This is just a fun project of mine to learn some Rust🦀 and system programming.
 
 ⚠️ *Work in progress* ⚠️

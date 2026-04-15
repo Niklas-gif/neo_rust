@@ -5,9 +5,7 @@ mod ui;
 use crate::linux::LinuxInfo;
 use crate::{app::App,};
 use crate::ui::ui;
-
 use std::{error::Error, io};
-
 use crossterm::execute;
 use ratatui::{
     Terminal,
@@ -43,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn run<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<(), Box<dyn Error>> {
     while !app.exit {
-        let result = terminal.draw(|frame| ui(frame, app));
+        let _result = terminal.draw(|frame| ui(frame, app));
         if let Event::Key(key) = event::read()? {
             if key.kind == event::KeyEventKind::Release {
                 // Skip events that are not KeyEventKind::Press
@@ -56,5 +54,5 @@ fn run<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<(), Box<
             }
         }
     }
-    return Ok(());
+    Ok(())
 }
