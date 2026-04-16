@@ -1,4 +1,4 @@
-use std::process::Command;
+use std::{fs, process::Command};
 
 use crate::sys_info::{self, GetSysInfo, SysInfo};
 
@@ -27,7 +27,14 @@ impl sys_info::GetSysInfo for MacInfo {
     }
     
     fn get_cpu() -> String {
-        todo!()
+        let cpu_info = Command::new("cpuinfo").output().expect("cpuinfo failed");
+        let result = String::from_utf8_lossy(&cpu_info.stdout).to_string();
+        for line in result.lines() {
+            if line.starts_with("Brand Raw:") {
+                return line["Brand Raw:".len()..].to_string()
+            }
+        }
+        return "Did not find line 'Brand Raw:'".to_string()
     }
     
     fn get_gpu() -> String {
@@ -41,9 +48,9 @@ impl Default for MacInfo {
             sys_info: SysInfo {
                 os: MacInfo::get_os_info(),
                 user: MacInfo::get_user(),
-                cpu: todo!(),
-                gpu: todo!(),
-                ascii_logo: todo!(),
+                cpu: MacInfo::get_cpu(),
+                gpu: "PLACEHOLDER TODO".to_string(),
+                ascii_logo: None,
             },
         }
     }

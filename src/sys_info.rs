@@ -3,7 +3,6 @@ use::std::env;
 
 
 pub fn get_os() -> String{
-    // Get kernel -> uname -s <- Only works on unix based systems!
     env::consts::OS.to_string()
 }
 
