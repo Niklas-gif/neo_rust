@@ -1,7 +1,35 @@
-use std::{fs, process::Command};
+use std::{process::Command};
 
 use crate::sys_info::{self, GetSysInfo, SysInfo};
 
+
+const MAC_ART: &str = r#"
+                                                  
+                                ##                
+                            ######                
+                            ######                
+                          ######                  
+                          ##                      
+                                                  
+            ##############################        
+          ################################        
+          ##############################          
+        ##############################            
+        ##############################            
+        ##############################            
+        ##############################            
+        ##############################            
+        ################################          
+        ################################          
+          ##################################      
+          ##################################      
+          ################################        
+            ##############################        
+              ##########################          
+                ##########  ##########            
+                  ##                              
+                                                  
+"#;
 
 #[derive(Debug)]
 /// Implementation for Mac.
@@ -38,7 +66,8 @@ impl sys_info::GetSysInfo for MacInfo {
     }
     
     fn get_gpu() -> String {
-        todo!()
+        //TODO
+        "metal".to_string()
     }
 }
 
@@ -49,8 +78,8 @@ impl Default for MacInfo {
                 os: MacInfo::get_os_info(),
                 user: MacInfo::get_user(),
                 cpu: MacInfo::get_cpu(),
-                gpu: "PLACEHOLDER TODO".to_string(),
-                ascii_logo: None,
+                gpu: MacInfo::get_gpu(),
+                ascii_logo: Some(String::from(MAC_ART)),
             },
         }
     }
